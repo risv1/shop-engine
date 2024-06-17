@@ -1,6 +1,9 @@
+use crate::schema::users;
+use diesel::prelude::*;
 use serde::Serialize;
 
-#[derive(Serialize)]
+#[derive(Serialize, Queryable, Insertable)]
+#[table_name = "users"]
 pub struct User {
     pub id: String,
     pub name: String,
