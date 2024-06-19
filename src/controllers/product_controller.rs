@@ -1,5 +1,5 @@
 use actix_web::{HttpResponse};
-use crate::models::product::Product;
+use crate::dto::product::Product;
 
 pub async fn get_products() -> HttpResponse {
     let products: Vec<Product> = vec![

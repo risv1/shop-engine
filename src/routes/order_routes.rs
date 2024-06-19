@@ -6,6 +6,7 @@ pub fn config(cfg: &mut web::ServiceConfig) {
         web::scope("/orders")
             .route("/cart", web::get().to(order_controller::get_cart))
             .route("/cart", web::post().to(order_controller::add_to_cart))
+            .route("/cart", web::delete().to(order_controller::delete_from_cart))
             .route("", web::get().to(order_controller::get_orders))
             .route("", web::post().to(order_controller::create_order))
             .route("/{id}", web::get().to(order_controller::get_order))

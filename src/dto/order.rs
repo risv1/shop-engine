@@ -1,4 +1,4 @@
-use crate::models::product::Product;
+use crate::dto::product::Product;
 use serde::{Serialize};
 
 #[derive(Serialize)]

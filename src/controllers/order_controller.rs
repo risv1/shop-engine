@@ -1,6 +1,6 @@
 use actix_web::{HttpResponse};
-use crate::models::order::Order;
-use crate::models::product::Product;
+use crate::dto::order::Order;
+use crate::dto::product::Product;
 
 pub async fn get_cart() -> HttpResponse {
     let products: Vec<Product> = vec![
@@ -36,6 +36,10 @@ pub async fn add_to_cart() -> HttpResponse {
     };
 
     HttpResponse::Ok().json(product)
+}
+
+pub async fn delete_from_cart() -> HttpResponse {
+    HttpResponse::Ok().json("Product deleted from cart")
 }
 
 

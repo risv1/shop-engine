@@ -1,5 +1,5 @@
 use actix_web::{HttpResponse};
-use crate::models::user::User;
+use crate::dto::user::User;
 
 pub async fn get_user() -> HttpResponse {
     let hello_user: User = User {
