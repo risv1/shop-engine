@@ -1,19 +1,11 @@
-use actix_web::{HttpRequest, HttpResponse};
-use actix_web::web::Json;
-use actix_web::cookie::Cookie;
-use actix_web::cookie::time::Duration;
-use jsonwebtoken::{encode, Header, EncodingKey};
+use actix_web::{HttpRequest, HttpResponse, cookie::{Cookie, time::Duration}, web::Json};
 use crate::database::models::{NewUser, User};
 use crate::database::conn::establish_connection;
-use crate::utils::hash::{hash_password, verify_password};
+use crate::utils::{hash::{hash_password, verify_password}, jwt::{encode_jwt_token}};
 use uuid::Uuid;
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize};
 use serde_json::json;
-use diesel::RunQueryDsl;
-use diesel::QueryDsl;
-use diesel::ExpressionMethods;
-use dotenvy::dotenv;
-use std::env;
+use diesel::{RunQueryDsl, QueryDsl, ExpressionMethods};
 use chrono;
 
 #[derive(Deserialize)]
@@ -29,12 +21,6 @@ pub struct LoginDto {
     password: String,
 }
 
-#[derive(Serialize)]
-struct Claims {
-    sub: String,
-    exp: usize,
-}
-
 pub async fn register(user: Json<RegisterDto>) -> HttpResponse {
     
     use crate::database::schema::users;
@@ -46,8 +32,9 @@ pub async fn register(user: Json<RegisterDto>) -> HttpResponse {
         name: &user.name,
         email: &user.email,
         password: &hash_password(&user.password),
-        created_at: &chrono::Utc::now().to_rfc3339(),
-        updated_at: &chrono::Utc::now().to_rfc3339(),
+        role: "user",
+        created_at: &chrono::Utc::now().to_string(),
+        updated_at: &chrono::Utc::now().to_string(),
     };
 
     diesel::insert_into(users::table)
@@ -64,9 +51,7 @@ pub async fn register(user: Json<RegisterDto>) -> HttpResponse {
 pub async fn login(login_data: Json<LoginDto>) -> HttpResponse {
     use crate::database::schema::users::dsl::*;
 
-    dotenv().ok();
     let conn = &mut establish_connection();
-    let jwt_secret = env::var("JWT_SECRET").expect("JWT_SECRET must be set");
 
     let user = users
         .filter(email.eq(&login_data.email))
@@ -88,21 +73,12 @@ pub async fn login(login_data: Json<LoginDto>) -> HttpResponse {
         }));
     }
 
-    let expiration = &chrono::Utc::now()
-        .checked_add_signed(chrono::Duration::seconds(60 * 60))
-        .expect("valid timestamp")
-        .timestamp();
-
-    let claims = Claims {
-        sub: checked_user.id.clone(),
-        exp: *expiration as usize,
-    };
-
-    let token = encode(&Header::default(), &claims, &EncodingKey::from_secret(jwt_secret.as_ref()))
-        .expect("Error encoding token");
+    let token = encode_jwt_token(checked_user.id.clone());
 
     let cookie = Cookie::build("token", token)
         .http_only(true)
+        .path("/")
+        .secure(true)
         .max_age(Duration::seconds(3600))
         .finish();
 
