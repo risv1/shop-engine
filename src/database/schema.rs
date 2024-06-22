@@ -12,6 +12,15 @@ diesel::table! {
 }
 
 diesel::table! {
+    category (id) {
+        id -> Text,
+        name -> Text,
+        created_at -> Text,
+        updated_at -> Text,
+    }
+}
+
+diesel::table! {
     order_items (id) {
         id -> Text,
         order_id -> Text,
@@ -27,6 +36,20 @@ diesel::table! {
         id -> Text,
         user_id -> Text,
         status -> Text,
+        created_at -> Text,
+        updated_at -> Text,
+    }
+}
+
+diesel::table! {
+    product (id) {
+        id -> Text,
+        name -> Text,
+        price -> Float8,
+        stock -> Int4,
+        description -> Text,
+        category_id -> Text,
+        image -> Text,
         created_at -> Text,
         updated_at -> Text,
     }
@@ -55,12 +78,18 @@ diesel::table! {
     }
 }
 
+diesel::joinable!(cart -> product (product_id));
+diesel::joinable!(cart -> users (user_id));
 diesel::joinable!(order_items -> orders (order_id));
+diesel::joinable!(order_items -> product (product_id));
+diesel::joinable!(product -> category (category_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
     cart,
+    category,
     order_items,
     orders,
+    product,
     products,
     users,
 );

@@ -1,28 +1,24 @@
 use diesel::prelude::*;
-use crate::database::schema::{cart};
+use crate::database::schema::{category};
 use serde::Serialize;
 
 #[derive(Insertable)]
 #[derive(Serialize)]
-#[diesel(table_name = cart)]
-pub struct NewItemToCart {
+#[diesel(table_name = category)]
+pub struct NewCategory {
     pub id: String,
-    pub user_id: String,
-    pub product_id: String,
-    pub quantity: i32,
+    pub name: String,
     pub created_at: String,
     pub updated_at: String,
 }
 
 #[derive(Serialize)]
 #[derive(Queryable, Selectable)]
-#[diesel(table_name = cart)]
+#[diesel(table_name = category)]
 #[diesel(check_for_backend(diesel::pg::Pg))]
-pub struct Cart {
+pub struct Category {
     pub id: String,
-    pub user_id: String,
-    pub product_id: String,
-    pub quantity: i32,
+    pub name: String,
     pub created_at: String,
     pub updated_at: String,
 }

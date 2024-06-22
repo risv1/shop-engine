@@ -1,5 +1,5 @@
 use actix_web::{web::{Json,Path}, HttpRequest, HttpResponse};
-use crate::database::models::{NewItemToCart, Cart, NewOrderItem, OrderItem, NewOrder, Order};
+use crate::dto::{cart::{NewItemToCart, Cart}, order::{NewOrder, Order}, order_item::{NewOrderItem, OrderItem}};
 use crate::database::conn::establish_connection;
 use crate::utils::jwt::decode_jwt_token;
 use uuid::Uuid;

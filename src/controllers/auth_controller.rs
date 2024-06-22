@@ -1,5 +1,5 @@
 use actix_web::{HttpRequest, HttpResponse, cookie::{Cookie, time::Duration}, web::Json};
-use crate::database::models::{NewUser, User};
+use crate::dto::user::{User, NewUser};
 use crate::database::conn::establish_connection;
 use crate::utils::{hash::{hash_password, verify_password}, jwt::{encode_jwt_token}};
 use uuid::Uuid;
