@@ -91,6 +91,7 @@ pub async fn logout(req: HttpRequest) -> HttpResponse {
     if let Some(_cookie) = req.cookie("token") {
         let cookie = Cookie::build("token", "")
             .http_only(true)
+            .path("/")
             .max_age(Duration::seconds(0))
             .finish();
         HttpResponse::Ok().cookie(cookie).json(json!({
