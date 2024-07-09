@@ -11,8 +11,9 @@ actix-web = "4"
 uuid = { version = "0.8.2", features = ["v4"] }
 bcrypt = "0.10.1"
 rand = "0.8.0"
-diesel = { version = "2.2.0", features = ["postgres"] }
+diesel = { version = "2.2.0", features = ["postgres", "r2d2"] }
 dotenvy = "0.15"
 serde_json = "1.0"
 jsonwebtoken = "7"
 chrono = "0.4.19"
+r2d2 = "0.8.10"
