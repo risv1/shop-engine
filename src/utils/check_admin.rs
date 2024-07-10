@@ -3,6 +3,8 @@ use crate::database::conn::establish_connection;
 use crate::dto::user::User;
 use crate::utils::jwt::decode_jwt_token;
 
+// upgrade to middleware interceptor instead of a manual check on every endpoint.
+
 pub fn check_admin(token: String) -> bool { 
     use crate::database::schema::users::dsl::*;
 
