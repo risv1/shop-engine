@@ -3,7 +3,6 @@ mod routes;
 mod dto;
 mod utils;
 mod database;
-mod middlewares;
 
 use actix_web::{App, HttpServer};
 

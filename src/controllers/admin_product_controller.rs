@@ -5,6 +5,7 @@ use serde_json::json;
 use serde::Deserialize;
 use diesel::{ RunQueryDsl, QueryDsl, ExpressionMethods, TextExpressionMethods };
 use uuid::Uuid;
+use crate::utils::check_admin::check_admin;
 
 #[derive(Deserialize)]
 pub struct NewProductDto {
@@ -26,8 +27,18 @@ pub struct UpdateProductDto {
     description: String,
 }
 
-pub async fn create_product(product_data: Json<NewProductDto>) -> HttpResponse {
+pub async fn create_product(req: HttpRequest, product_data: Json<NewProductDto>) -> HttpResponse {
     use crate::database::schema::product;
+    let token = req.cookie("token").unwrap();
+    let is_admin = check_admin(token.value().to_string());
+
+    if !is_admin {
+        return HttpResponse::Unauthorized().json(
+            json!({
+                "message": "Unauthorized"
+            })
+        );
+    }
 
     let conn = &mut establish_connection();
 
@@ -63,6 +74,17 @@ pub async fn update_product(
     update_product_data: Json<UpdateProductDto>
 ) -> HttpResponse {
     use crate::database::schema::product::dsl::*;
+
+    let token = req.cookie("token").unwrap();
+    let is_admin = check_admin(token.value().to_string());
+
+    if !is_admin {
+        return HttpResponse::Unauthorized().json(
+            json!({
+                "message": "Unauthorized"
+            })
+        );
+    }
 
     let conn = &mut establish_connection();
     let product_id = path.into_inner();
@@ -125,9 +147,7 @@ pub async fn update_product(
                     get_product[0].description.clone()
                 }
             ),
-            updated_at.eq(
-                chrono::Local::now().naive_local().to_string()
-            ),
+            updated_at.eq(chrono::Local::now().naive_local().to_string()),
         ))
         .execute(conn);
 
@@ -143,6 +163,17 @@ pub async fn update_product(
 
 pub async fn delete_product(path: Path<String>, req: HttpRequest) -> HttpResponse {
     use crate::database::schema::product::dsl::*;
+
+    let token = req.cookie("token").unwrap();
+    let is_admin = check_admin(token.value().to_string());
+
+    if !is_admin {
+        return HttpResponse::Unauthorized().json(
+            json!({
+                "message": "Unauthorized"
+            })
+        );
+    }
 
     let conn = &mut establish_connection();
     let product_id = path.into_inner();
